@@ -1,17 +1,382 @@
-h1, h2, h3, h4, h5, h6 {
-    font-family: 'Merriweather', serif;
-    color: white;
+:root {
+    /* Light Theme Palette */
+    --bg-color-light: #F4F6F8;
+    --text-color-primary-light: #212121;
+    --text-color-secondary-light: #5F6368;
+    --accent-color-light: #00796B;
+    --accent-color-light-hover: #00695C;
+    --border-color-light: #D1D5DB;
+    --section-bg-color-light: #FFFFFF;
+    --jumbotron-bg-image-light: url("background.jpg"); 
+    --jumbotron-text-color-light: var(--accent-color-light); 
+    --link-color-light: var(--accent-color-light); 
+    --email-link-color-light: var(--accent-color-light);
+
+    /* Dark Theme Palette */
+    --bg-color-dark: #1F2937;
+    --text-color-primary-dark: #E5E7EB;
+    --text-color-secondary-dark: #9CA3AF;
+    --accent-color-dark: #26A69A;
+    --accent-color-dark-hover: #00897B; /* Adjusted dark hover */
+    --border-color-dark: #4B5563;
+    --section-bg-color-dark: #374151;
+    --jumbotron-bg-image-dark: url("background-dark.jpg"); 
+    --jumbotron-text-color-dark: var(--accent-color-dark);
+    --link-color-dark: var(--accent-color-dark);
+    --email-link-color-dark: var(--accent-color-dark);
+
+    /* Universal variables */
+    --button-text-color: #FFFFFF; 
 }
 
-* {
+/* Typography and Basic Layout Reset */
+body {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300; 
+    line-height: 1.6;
+    color: var(--text-color-primary-light); 
+    padding: 0;
+    margin: 0;
+    background-color: var(--bg-color-light); 
+    transition: background-color 0.5s ease, color 0.5s ease;
+}
+body[data-theme="dark"] {
+    background-color: var(--bg-color-dark);
+    color: var(--text-color-primary-dark);
+}
+
+* { 
+    box-sizing: border-box;
     padding: 0;
     margin: 0;    
 }
 
-.jumbotron {
-    background-image: url("background.jpg");    
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700; 
+    color: var(--text-color-primary-light); /* Changed from white */
+    margin-bottom: 0.75rem;
+    line-height: 1.2; 
+    transition: color 0.5s ease;
+}
+body[data-theme="dark"] h1,
+body[data-theme="dark"] h2,
+body[data-theme="dark"] h3,
+body[data-theme="dark"] h4,
+body[data-theme="dark"] h5,
+body[data-theme="dark"] h6 {
+    color: var(--text-color-primary-dark);
 }
 
+
+/* Specific text elements styling */
+.jumbotron h1 { 
+    font-size: 2.8rem !important; 
+} 
+.jumbotron h1 strong { /* Jumbotron title text from inline style */
+    color: var(--jumbotron-text-color-light) !important;
+}
+body[data-theme="dark"] .jumbotron h1 strong {
+    color: var(--jumbotron-text-color-dark) !important;
+}
+
+.introduction-section h2 { 
+    font-size: 2.2rem !important; 
+} 
+.introduction-section h2 strong { /* Intro heading text from inline style */
+    color: var(--text-color-primary-light) !important; /* Use primary text color */
+}
+body[data-theme="dark"] .introduction-section h2 strong {
+    color: var(--text-color-primary-dark) !important;
+}
+
+.col-md-4 a h3 { /* Main navigation links */
+    font-size: 1.2rem !important; 
+    font-weight: 400 !important; 
+    color: var(--text-color-secondary-light) !important; /* Nav links use secondary color */
+} 
+body[data-theme="dark"] .col-md-4 a h3 {
+    color: var(--text-color-secondary-dark) !important;
+}
+
+.col-md-1 a h6 { /* Sign in/up links */
+    font-size: 0.9rem !important; 
+    font-weight: 400 !important; 
+    color: var(--text-color-secondary-light) !important; /* Also secondary */
+} 
+body[data-theme="dark"] .col-md-1 a h6 {
+    color: var(--text-color-secondary-dark) !important;
+}
+
+.introduction-section + div .row .col-md-12 h4 { 
+    font-size: 1.1rem !important; 
+    font-weight: 400 !important; 
+    color: var(--text-color-primary-light) !important; /* CTA text primary */
+}
+.introduction-section + div .row .col-md-12 h4 em {
+    font-style: normal; 
+    color: var(--text-color-primary-light) !important;
+}
+body[data-theme="dark"] .introduction-section + div .row .col-md-12 h4,
+body[data-theme="dark"] .introduction-section + div .row .col-md-12 h4 em {
+    color: var(--text-color-primary-dark) !important;
+}
+
+
+#main-container > .row > .col-md-12 > p > em { /* Tagline */
+    font-style: normal; 
+    font-weight: 400; 
+    font-size: 1.25rem !important; 
+    color: var(--text-color-secondary-light) !important; /* Tagline secondary */
+}
+body[data-theme="dark"] #main-container > .row > .col-md-12 > p > em {
+    color: var(--text-color-secondary-dark) !important;
+}
+
+.introduction-section + div .col .text-center p em { /* Intro paragraph */
+    font-style: normal; 
+    font-weight: 300 !important; 
+    color: var(--text-color-primary-light) !important; /* Intro text primary */
+}
+body[data-theme="dark"] .introduction-section + div .col .text-center p em {
+    color: var(--text-color-primary-dark) !important;
+}
+
+/* Main container styling */
+#main-container.text-center-container { /* Added class from HTML */
+    text-align: center; /* Moved from inline style */
+    background-color: var(--bg-color-light);
+}
+body[data-theme="dark"] #main-container.text-center-container {
+    background-color: var(--bg-color-dark);
+}
+
+.logo-row { /* New class for logo and tagline row */
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.tagline-text p { /* Styles for tagline paragraph */
+    color: var(--text-color-secondary-light) !important; /* Was #main-container > .row > .col-md-12 > p > em */
+    font-style: normal; 
+    font-weight: 400; 
+    font-size: 1.25rem !important; 
+    padding-bottom: 1rem; /* Added some padding */
+}
+body[data-theme="dark"] .tagline-text p {
+    color: var(--text-color-secondary-dark) !important;
+}
+
+
+.jumbotron {
+    background-image: var(--jumbotron-bg-image-light);    
+    padding: 2.5rem 1rem; /* Adjusted padding from previous step */
+    transition: background-image 0.5s ease, background-color 0.5s ease;
+}
+body[data-theme="dark"] .jumbotron {
+    background-image: var(--jumbotron-bg-image-dark);
+}
+
+/* Intro content section background */
+.intro-content-block { /* Replaced .introduction-section + div[style*="background-color: whitesmoke"] */
+    background-color: var(--section-bg-color-light);
+    padding: 2rem 1rem;
+    border-radius: 8px; 
+    margin-top: 1.5rem;
+    transition: background-color 0.5s ease;
+}
+body[data-theme="dark"] .intro-content-block {
+    background-color: var(--section-bg-color-dark);
+}
+
+.section-padding { /* Utility class for consistent padding in sections */
+    padding: 1.5rem; /* Was 3% inline */
+}
+
+.image-row { /* Row containing the taco image */
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.cta-row { /* Row for CTA text */
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.button-row {
+    padding-top: 1rem;
+    padding-bottom: 1.5rem;
+}
+.button-container .btn { /* Class for div containing buyer/seller buttons */
+    margin: 0.5rem; /* Replaces inline margin: 3% 3% */
+}
+
+
+/* Main navigation border */
+.main-nav-bar { /* Replaced .row[style*="border: 2px solid white"] */
+    border: 1px solid var(--border-color-light); 
+    border-radius: 8px; 
+    padding: 0.75rem 0.5rem; 
+    transition: border-color 0.5s ease;
+    margin-bottom: 1.5rem; /* Add space below nav bar */
+}
+body[data-theme="dark"] .main-nav-bar {
+    border-color: var(--border-color-dark);
+}
+
+/* HR lines */
+hr {
+    background-color: var(--border-color-light);
+    border: none; 
+    height: 1px; 
+    margin: 1rem 0; /* Consistent spacing */
+    transition: background-color 0.5s ease;
+}
+body[data-theme="dark"] hr {
+    background-color: var(--border-color-dark);
+}
+
+/* Footer */
+footer {
+    background-color: var(--bg-color-light) !important; 
+    padding: 2rem 2%; 
+    margin-top: 2rem;
+    border-top: 1px solid var(--border-color-light); 
+    text-align: center;
+    transition: background-color 0.5s ease, border-top-color 0.5s ease;
+}
+body[data-theme="dark"] footer {
+    background-color: var(--bg-color-dark) !important;
+    border-top-color: var(--border-color-dark) !important;
+}
+
+footer p { 
+    color: var(--text-color-secondary-light) !important;
+    margin-bottom: 0.5rem;
+}
+footer p strong { 
+    color: var(--text-color-primary-light) !important; /* Make "Connect on..." slightly more prominent */
+    font-weight: 400;
+}
+body[data-theme="dark"] footer p {
+    color: var(--text-color-secondary-dark) !important;
+}
+body[data-theme="dark"] footer p strong {
+    color: var(--text-color-primary-dark) !important;
+}
+
+#email-link {
+    color: var(--email-link-color-light) !important; 
+    text-decoration: none;
+}
+#email-link:hover {
+    text-decoration: underline;
+}
+body[data-theme="dark"] #email-link {
+    color: var(--email-link-color-dark) !important;
+}
+
+/* Remove old orange bar */
+div.row[style*="background-color: orangered;"] {
+    display: none !important; 
+}
+
+/* Social Media Icons */
 footer img {
-    margin-right: 2%;
+    margin-right: 10px; 
+    transition: filter 0.3s ease;
+    width: 24px; /* Smaller icons */
+    height: 24px;
+}
+body[data-theme="dark"] footer img {
+    filter: invert(75%) sepia(10%) saturate(500%) hue-rotate(180deg) brightness(1.2); /* Adjusted filter */
+}
+
+/* Theme Toggle Switch Styles */
+.theme-switch {
+  position: relative;
+  display: inline-block;
+  width: 50px; 
+  height: 24px; 
+}
+.theme-switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--border-color-light); 
+  transition: .4s;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px; 
+  width: 18px;  
+  left: 3px;   
+  bottom: 3px; 
+  background-color: white; 
+  transition: .4s;
+}
+input:checked + .slider {
+  background-color: var(--accent-color-light); 
+}
+body[data-theme="dark"] input:checked + .slider {
+  background-color: var(--accent-color-dark); 
+}
+input:focus + .slider {
+  box-shadow: 0 0 2px var(--accent-color-light);
+}
+body[data-theme="dark"] input:focus + .slider {
+  box-shadow: 0 0 2px var(--accent-color-dark);
+}
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+.slider.round { border-radius: 24px; }
+.slider.round:before { border-radius: 50%; }
+
+/* Button styles */
+.btn-buyer, .btn-seller {
+    background-color: var(--accent-color-light) !important; 
+    border: 1px solid var(--accent-color-light) !important; 
+    color: var(--button-text-color) !important; 
+    transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+    padding: 0.6rem 1.2rem; 
+    border-radius: 5px; 
+    font-weight: 700 !important; 
+    text-transform: uppercase; 
+    letter-spacing: 0.5px; 
+}
+.btn-buyer:hover, .btn-seller:hover {
+    background-color: var(--accent-color-light-hover) !important; 
+    border-color: var(--accent-color-light-hover) !important;
+}
+body[data-theme="dark"] .btn-buyer, 
+body[data-theme="dark"] .btn-seller {
+    background-color: var(--accent-color-dark) !important;
+    border-color: var(--accent-color-dark) !important;
+}
+body[data-theme="dark"] .btn-buyer:hover, 
+body[data-theme="dark"] .btn-seller:hover {
+    background-color: var(--accent-color-dark-hover) !important; 
+    border-color: var(--accent-color-dark-hover) !important;
+}
+
+/* Fade-in animation (from original stylesheet) */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.jumbotron, .introduction-section {
+    animation: fadeIn 0.8s ease-in-out forwards;
+}
+.introduction-section {
+    animation-delay: 0.2s; 
 }
