@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme Toggle Test</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        .results { list-style-type: none; padding: 0; }
+        .results li { margin-bottom: 5px; padding: 8px; border-radius: 4px; }
+        .results .pass { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .results .fail { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .theme-switch { position: relative; display: inline-block; width: 50px; height: 24px; margin-bottom: 20px;}
+        .theme-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; }
+        input:checked + .slider { background-color: #2196F3; }
+        input:checked + .slider:before { transform: translateX(26px); }
+        .slider.round { border-radius: 24px; }
+        .slider.round:before { border-radius: 50%; }
+    </style>
+</head>
+<body>
+    <h1>Theme Toggle Test Page</h1>
+
+    <p><strong>Instructions:</strong> Test results are displayed below. Check the browser console for more detailed logs if needed. Ensure `theme-toggle.js` is in the same directory.</p>
+
+    <!-- Theme Toggle Switch HTML (from index.html) -->
+    <label class="theme-switch">
+        <input type="checkbox" id="theme-toggle-checkbox">
+        <span class="slider round"></span>
+    </label>
+    <button id="run-tests">Run All Tests</button>
+    <button id="reset-storage">Reset LocalStorage (and re-run tests)</button>
+
+
+    <h2>Test Results:</h2>
+    <ul class="results" id="test-results"></ul>
+
+    <script src="theme-toggle.js"></script>
+    <script>
+        const resultsList = document.getElementById('test-results');
+        const themeToggleCheckbox = document.getElementById('theme-toggle-checkbox');
+        const body = document.body;
+        let testCount = 0;
+        let passCount = 0;
+
+        function logResult(message, passed) {
+            testCount++;
+            const li = document.createElement('li');
+            li.textContent = message;
+            if (passed) {
+                li.className = 'pass';
+                passCount++;
+            } else {
+                li.className = 'fail';
+            }
+            resultsList.appendChild(li);
+            console.log((passed ? "PASS: " : "FAIL: ") + message);
+        }
+
+        function assertEquals(actual, expected, message) {
+            logResult(message + ` (Expected: ${expected}, Got: ${actual})`, actual === expected);
+        }
+
+        function assertTrue(value, message) {
+            logResult(message + ` (Expected: true, Got: ${value})`, !!value);
+        }
+        
+        function assertFalse(value, message) {
+            logResult(message + ` (Expected: false, Got: ${value})`, !value);
+        }
+
+        function assertNullOrUndefined(value, message) {
+            logResult(message + ` (Expected: null/undefined, Got: ${value})`, value === null || typeof value === 'undefined');
+        }
+        
+        function getAppliedTheme() {
+            return body.dataset.theme || 'light'; // If no data-theme, it's light
+        }
+
+        // --- Test Cases ---
+        async function runTests() {
+            resultsList.innerHTML = ''; // Clear previous results
+            testCount = 0;
+            passCount = 0;
+            console.clear(); // Clear console for new test run
+
+            // Helper to reset checkbox state visually and programmatically for tests
+            function setToggleState(checked) {
+                themeToggleCheckbox.checked = checked;
+                // Manually trigger change event for the theme script to pick up
+                themeToggleCheckbox.dispatchEvent(new Event('change')); 
+            }
+            
+            // Helper to wait for theme script to process (e.g., localStorage updates)
+            function delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            // Test 1: Default theme is light
+            console.log("--- Running Test 1: Default theme ---");
+            // Ensure localStorage is clean for this test or theme is explicitly light
+            localStorage.removeItem('theme'); 
+            applyTheme('light'); // From theme-toggle.js, ensure initial state
+            setToggleState(false); // Ensure toggle is off
+            await delay(50); // Give theme-toggle.js time to react if it has any async init
+            assertEquals(getAppliedTheme(), 'light', 'Test 1.1: Body theme should be light by default');
+            const initialStorageTheme = localStorage.getItem('theme');
+            assertTrue(initialStorageTheme === 'light' || initialStorageTheme === null, 'Test 1.2: LocalStorage theme should be light or null by default');
+
+
+            // Test 2: Clicking toggle changes to dark theme
+            console.log("--- Running Test 2: Toggle to Dark ---");
+            setToggleState(true); // Click to turn on (dark)
+            await delay(50);
+            assertEquals(getAppliedTheme(), 'dark', 'Test 2.1: Body theme should be dark after first toggle');
+            assertEquals(localStorage.getItem('theme'), 'dark', 'Test 2.2: LocalStorage theme should be dark after first toggle');
+
+            // Test 3: Clicking toggle again changes back to light theme
+            console.log("--- Running Test 3: Toggle back to Light ---");
+            setToggleState(false); // Click to turn off (light)
+            await delay(50);
+            assertEquals(getAppliedTheme(), 'light', 'Test 3.1: Body theme should be light after second toggle');
+            assertEquals(localStorage.getItem('theme'), 'light', 'Test 3.2: LocalStorage theme should be light after second toggle');
+
+            // Test 4: Dark theme preference from localStorage is applied on load
+            // To simulate "on load", we'll set localStorage, then call applyTheme directly as theme-toggle.js does.
+            // Note: A full page reload test is harder to automate here, so we simulate the script's load behavior.
+            console.log("--- Running Test 4: Load Dark Preference ---");
+            localStorage.setItem('theme', 'dark');
+            applyTheme('dark'); // Simulate the theme script's loading logic
+            setToggleState(true); // Sync toggle to the loaded theme
+            await delay(50);
+            assertEquals(getAppliedTheme(), 'dark', 'Test 4.1: Body theme should be dark when localStorage is dark');
+            assertTrue(themeToggleCheckbox.checked, 'Test 4.2: Toggle checkbox should be checked when localStorage is dark');
+            
+            // Test 5: Light theme preference from localStorage is applied on load
+            console.log("--- Running Test 5: Load Light Preference ---");
+            localStorage.setItem('theme', 'light');
+            applyTheme('light'); // Simulate the theme script's loading logic
+            setToggleState(false); // Sync toggle to the loaded theme
+            await delay(50);
+            assertEquals(getAppliedTheme(), 'light', 'Test 5.1: Body theme should be light when localStorage is light');
+            assertFalse(themeToggleCheckbox.checked, 'Test 5.2: Toggle checkbox should be unchecked when localStorage is light');
+
+            // Summary
+            const summaryLi = document.createElement('li');
+            summaryLi.textContent = `--- Test Summary: ${passCount} / ${testCount} passed ---`;
+            summaryLi.className = passCount === testCount ? 'pass' : 'fail';
+            resultsList.prepend(summaryLi); // Add summary at the top
+            console.log(`--- Test Summary: ${passCount} / ${testCount} passed ---`);
+        }
+
+        document.getElementById('run-tests').addEventListener('click', runTests);
+        document.getElementById('reset-storage').addEventListener('click', () => {
+            localStorage.removeItem('theme');
+            // Reset body theme attribute and checkbox for immediate visual feedback
+            document.body.removeAttribute('data-theme');
+            if (document.getElementById('main-container')) {
+                 document.getElementById('main-container').removeAttribute('data-theme');
+            }
+            themeToggleCheckbox.checked = false;
+            console.log("LocalStorage 'theme' cleared. Body attribute removed, checkbox unchecked.");
+            // Optionally, re-run tests after reset to see default behavior
+            runTests(); 
+        });
+        
+        // Automatically run tests on page load, after theme-toggle.js has had a chance to initialize
+        window.addEventListener('load', () => {
+            // A small delay to ensure theme-toggle.js's DOMContentLoaded has fired and applied initial theme
+            setTimeout(runTests, 100);
+        });
+
+    </script>
+</body>
+</html>
